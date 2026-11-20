@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insta Aufräumen</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#f6f6f8;--card:#fff;--text:#1b1b1f;--muted:#6b6b76;--line:#e3e3e8;
+  --accent:#d6246e;--accent-soft:#fde7f0;--good:#1f8a4c;--good-soft:#e3f5ea;
+  --warn:#b26a00;--warn-soft:#fff3dc;--bad:#c62828;--bad-soft:#fde8e8;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#121216;--card:#1c1c22;--text:#ececf1;--muted:#9a9aa6;--line:#2e2e37;
+  --accent:#ff4f93;--accent-soft:#3a1626;--good:#4cc27c;--good-soft:#14301f;
+  --warn:#f0a83a;--warn-soft:#33260f;--bad:#ff6b6b;--bad-soft:#3a1616;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}
+h2{font-size:17px;margin:0 0 12px}
+.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.drop{border:2px dashed var(--line);border-radius:14px;padding:36px 16px;text-align:center;cursor:pointer;transition:.15s}
+.drop.over,.drop:hover{border-color:var(--accent);background:var(--accent-soft)}
+.drop b{display:block;font-size:17px;margin-bottom:4px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+ol{padding-left:20px;margin:8px 0}
+li{margin:4px 0}
+code{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:var(--bg);border-radius:10px;padding:10px 12px}
+.stat .n{font-size:22px;font-weight:700}
+.stat .l{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:7px 14px;cursor:pointer;font:inherit}
+.tab.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:9px 14px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.btn.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.btn.sm{padding:4px 10px;font-size:13px;border-radius:8px}
+kbd{display:inline-block;min-width:20px;padding:0 5px;border:1px solid currentColor;border-bottom-width:2px;border-radius:5px;font-size:12px;opacity:.8;margin-left:6px;font-family:inherit}
+.focus{text-align:center;padding:28px 16px}
+.focus .user{font-size:30px;font-weight:700;word-break:break-all;margin:6px 0}
+.focus .meta{color:var(--muted);margin-bottom:22px}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:520px;margin:0 auto}
+.big .btn{padding:18px 10px;font-size:17px;font-weight:600}
+.row2{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.progress{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin:4px 0 14px}
+.progress div{height:100%;background:var(--accent);width:0;transition:width .2s}
+.banner{border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.banner.info{background:var(--accent-soft);color:var(--accent)}
+.opts{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:14px;margin-top:6px}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+select,input[type=search]{font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+input[type=search]{width:100%;margin-bottom:12px}
+.list{border-top:1px solid var(--line)}
+.item{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid var(--line)}
+.item .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .name a{color:var(--text);text-decoration:none;font-weight:600}
+.item .name a:hover{text-decoration:underline}
+.item .date{color:var(--muted);font-size:13px;white-space:nowrap}
+.pill{font-size:12px;border-radius:99px;padding:2px 8px;white-space:nowrap}
+.pill.u{background:var(--bad-soft);color:var(--bad)}
+.pill.k{background:var(--good-soft);color:var(--good)}
+.hide{display:none!important}
+.done{font-size:40px;margin-bottom:6px}
+.foot{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+@media (max-width:560px){.item .date{display:none}.focus .user{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Insta Aufräumen</h1>
+  <p class="sub">Findet Accounts, die dir nicht zurückfolgen, damit du ihnen schnell entfolgen kannst. Deine Daten bleiben auf diesem Rechner.</p>
+
+  <!-- ===== Upload ===== -->
+  <section id="viewUpload">
+    <div class="card">
+      <div class="drop" id="drop">
+        <b>Instagram-Export hier hineinziehen</b>
+        <span class="muted">ZIP-Datei oder <code>followers_1.json</code> + <code>following.json</code>, oder klicken zum Auswählen</span>
+        <input type="file" id="file" multiple accept=".zip,.json" class="hide">
+      </div>
+      <div id="uploadMsg" class="banner bad hide" style="margin-top:14px"></div>
+    </div>
+    <div class="card">
+      <h2>So bekommst du den Export</h2>
+      <ol>
+        <li>Instagram öffnen, dann <b>Einstellungen → Kontenübersicht</b></li>
+        <li><b>Deine Informationen und Berechtigungen → Deine Informationen herunterladen</b></li>
+        <li><b>Herunterladen oder übertragen</b>, dann dein Instagram-Konto wählen</li>
+        <li><b>Einige deiner Informationen</b> und nur <b>„Follower und gefolgte Personen“</b> anhaken</li>
+        <li><b>Auf Gerät herunterladen</b>: Zeitraum <b>Gesamter Zeitraum</b>, Format <b>JSON</b> (wichtig, nicht HTML)</li>
+        <li>Wenn die Mail kommt (meist nach wenigen Minuten), die ZIP herunterladen und hier hineinziehen</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== Main ===== -->
+  <section id="viewMain" class="hide">
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><div class="n" id="sFollowing">0</div><div class="l">Du folgst</div></div>
+        <div class="stat"><div class="n" id="sFollowers">0</div><div class="l">Folgen dir</div></div>
+        <div class="stat"><div class="n" id="sNon">0</div><div class="l">Folgen nicht zurück</div></div>
+        <div class="stat"><div class="n" id="sOpen">0</div><div class="l">Noch offen</div></div>
+        <div class="stat"><div class="n" id="sToday">0</div><div class="l">Heute entfolgt</div></div>
+      </div>
+    </div>
+
+    <div id="limitBanner" class="banner hide"></div>
+
+    <div class="tabs">
+      <button class="tab on" data-view="focus">Durchklicken</button>
+      <button class="tab" data-view="list">Liste</button>
+      <button class="tab" data-view="settings">Einstellungen</button>
+    </div>
+
+    <!-- Focus mode -->
+    <div id="tabFocus">
+      <div class="card">
+        <div class="muted small" id="progText"></div>
+        <div class="progress"><div id="progBar"></div></div>
+        <div id="focusBox" class="focus"></div>
+      </div>
+      <div class="card small muted">
+        <b>So geht's am schnellsten:</b> Drück <kbd>O</kbd>. Instagram öffnet sich als schmales Fenster rechts.
+        Dort <b>Gefolgt → Nicht mehr folgen</b> klicken, dann <b>Strg+W</b>: Das schließt das Instagram-Fenster und du bist zurück im Tool.
+        Jetzt <kbd>E</kbd> drücken, dann öffnet sich das nächste Profil automatisch. Ablauf also: <b>entfolgen → Strg+W → E</b>.
+        <br>(Das Tool kann das Instagram-Fenster nicht selbst schließen, das blockiert Instagram aus Sicherheitsgründen.)<br>
+        Tasten: <kbd>E</kbd> entfolgt · <kbd>B</kbd> behalten · <kbd>S</kbd> überspringen · <kbd>Z</kbd> rückgängig · <kbd>O</kbd> Profil öffnen
+      </div>
+    </div>
+
+    <!-- List mode -->
+    <div id="tabList" class="hide">
+      <div class="card">
+        <div class="tabs" id="listFilter">
+          <button class="tab on" data-f="open">Offen</button>
+          <button class="tab" data-f="u">Entfolgt</button>
+          <button class="tab" data-f="k">Behalten</button>
+          <button class="tab" data-f="all">Alle</button>
+        </div>
+        <input type="search" id="search" placeholder="Benutzernamen suchen …">
+        <div class="muted small" id="listCount" style="margin-bottom:6px"></div>
+        <div class="list" id="list"></div>
+        <div class="row2"><button class="btn hide" id="more">Mehr anzeigen</button></div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="tabSettings" class="hide">
+      <div class="card">
+        <h2>Reihenfolge</h2>
+        <select id="sort">
+          <option value="old">Am längsten gefolgt zuerst</option>
+          <option value="new">Zuletzt gefolgt zuerst</option>
+          <option value="az">Alphabetisch</option>
+        </select>
+        <h2 style="margin-top:20px">Verhalten</h2>
+        <div class="opts" style="flex-direction:column;align-items:flex-start">
+          <label><input type="checkbox" id="optPopup" checked> Instagram als schmales Seitenfenster rechts öffnen</label>
+          <label><input type="checkbox" id="optAuto" checked> Nach Entfolgt/Behalten das nächste Profil automatisch öffnen</label>
+        </div>
+        <h2 style="margin-top:20px">Tageslimit</h2>
+        <div class="opts">
+          <label>Warnung ab <input type="number" id="optLimit" min="10" max="500" value="100" style="width:80px;font:inherit;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text)"> Entfolgungen pro Tag</label>
+        </div>
+        <p class="small muted">Instagram drosselt Accounts, die zu schnell entfolgen. 100 bis 150 pro Tag sind meist unproblematisch. Wenn Instagram „Versuche es später erneut“ anzeigt, hör für heute auf.</p>
+      </div>
+      <div class="card">
+        <h2>Stand sichern</h2>
+        <p class="small muted" style="margin-top:0">Dein Stand wird im Browser gespeichert. Wenn du die Browserdaten löschst oder den Browser wechselst, ist er aber weg. Sichere ihn deshalb als Datei, am besten in diesen Ordner. Zum Wiederherstellen die Datei einfach ins Tool ziehen oder auf „Stand laden“ klicken.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px">
+          <button class="btn primary" id="btnBackup">Stand als Datei sichern</button>
+          <button class="btn" id="btnRestore">Stand laden</button>
+          <input type="file" id="restoreFile" accept=".json" class="hide">
+        </div>
+        <h2>Daten</h2>
+        <div class="foot">
+          <span class="small muted" id="loadedInfo"></span>
+          <span style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="btnNew">Neuen Export laden</button>
+            <button class="btn bad" id="btnReset">Alles zurücksetzen</button>
+          </span>
+        </div>
+        <p class="small muted">„Neuen Export laden“ behält deine Markierungen (entfolgt/behalten). „Alles zurücksetzen“ löscht alles.</p>
+      </div>
+    </div>
+  </section>
+  <p class="small muted" style="text-align:center;margin-top:28px">Läuft komplett lokal, es werden keine Daten hochgeladen. Kein offizielles Tool, steht in keiner Verbindung zu Instagram oder Meta.</p>
+</div>
+
+<script>
+(() => {
+'use strict';
+const KEY = 'igAufraeumen.v1';
+const $ = id => document.getElementById(id);
+
+// ---------- storage ----------
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) return s; } catch (e) {}
+  return null;
+}
+let S = load() || { following: [], followers: [], status: {}, loadedAt: null,
+  settings: { sort: 'old', popup: true, auto: true, limit: 100 } };
+S.settings = Object.assign({ sort: 'old', popup: true, auto: true, limit: 100 }, S.settings || {});
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+// ---------- parsing ----------
+function userFromHref(h) {
+  const m = /instagram\.com\/(?:_u\/)?([^/?#]+)/i.exec(h || '');
+  return m ? decodeURIComponent(m[1]) : '';
+}
+function collect(json) {
+  const out = [];
+  (function walk(o) {
+    if (Array.isArray(o)) { o.forEach(walk); return; }
+    if (!o || typeof o !== 'object') return;
+    if (Array.isArray(o.string_list_data)) {
+      const sd = o.string_list_data[0] || {};
+      const u = (sd.value || o.title || userFromHref(sd.href) || '').trim();
+      if (u) out.push({ u: u.toLowerCase(), t: sd.timestamp || 0 });
+      return;
+    }
+    Object.values(o).forEach(walk);
+  })(json);
+  return out;
+}
+function kindOf(name) {
+  const n = name.split(/[\\/]/).pop().toLowerCase();
+  if (/^followers(_\d+)?\.json$/.test(n)) return 'followers';
+  if (n === 'following.json') return 'following';
+  if (/^followers(_\d+)?\.html$/.test(n) || n === 'following.html') return 'html';
+  return null;
+}
+
+async function handleFiles(files) {
+  const msg = $('uploadMsg'); msg.className = 'banner bad hide';
+  restoredNow = false;
+  const parts = []; // {kind, text}
+  let sawHtml = false;
+  try {
+    for (const f of files) {
+      if (/\.zip$/i.test(f.name)) {
+        if (!window.JSZip) throw new Error('ZIP-Bibliothek konnte nicht geladen werden (Internet nötig). Entpacke die ZIP und zieh die beiden JSON-Dateien hinein.');
+        const zip = await JSZip.loadAsync(f);
+        for (const name of Object.keys(zip.files)) {
+          const k = kindOf(name);
+          if (k === 'html') sawHtml = true;
+          else if (k) parts.push({ kind: k, text: await zip.files[name].async('string') });
+        }
+      } else {
+        const k = kindOf(f.name);
+        if (k === 'html') sawHtml = true;
+        else if (k) parts.push({ kind: k, text: await f.text() });
+        else if (/\.json$/i.test(f.name)) {
+          let j = null; try { j = JSON.parse(await f.text()); } catch (e) {}
+          if (j && j.igAufraeumenBackup) { restoreBackup(j); if (files.length === 1) return; }
+        }
+      }
+    }
+    if (!parts.length && restoredNow) return;
+    const followers = [], following = [];
+    for (const p of parts) (p.kind === 'followers' ? followers : following).push(...collect(JSON.parse(p.text)));
+    if (!following.length || !followers.length) {
+      let t = sawHtml
+        ? 'Der Export ist im HTML-Format. Bitte fordere ihn nochmal im Format JSON an.'
+        : 'Nicht gefunden: ' + [!followers.length && 'followers_1.json', !following.length && 'following.json'].filter(Boolean).join(' und ') + '. Ist es der richtige Export mit „Follower und gefolgte Personen“?';
+      throw new Error(t);
+    }
+    const fm = new Map(); following.forEach(x => { if (!fm.has(x.u)) fm.set(x.u, x); });
+    S.following = [...fm.values()];
+    S.followers = [...new Set(followers.map(x => x.u))];
+    S.loadedAt = Date.now();
+    save(); start();
+  } catch (e) {
+    msg.textContent = e.message || String(e); msg.classList.remove('hide');
+  }
+}
+window.__igHandleFiles = handleFiles; // for testing
+
+// ---------- backup ----------
+let restoredNow = false;
+function backupData() {
+  return { igAufraeumenBackup: 1, savedAt: Date.now(), status: S.status, settings: S.settings,
+    following: S.following, followers: S.followers, loadedAt: S.loadedAt };
+}
+function downloadBackup() {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  const name = `insta-aufraeumen-stand-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}.json`;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(backupData())], { type: 'application/json' }));
+  const a = document.createElement('a'); a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  S.lastBackup = Date.now(); save();
+}
+function restoreBackup(j) {
+  restoredNow = true;
+  let added = 0;
+  for (const [u, v] of Object.entries(j.status || {})) if (!S.status[u]) { S.status[u] = v; added++; }
+  if (j.settings) S.settings = Object.assign(S.settings, j.settings);
+  if (!S.following.length && Array.isArray(j.following) && j.following.length) {
+    S.following = j.following; S.followers = j.followers || []; S.loadedAt = j.loadedAt || null;
+  }
+  save();
+  const n = Object.keys(j.status || {}).length;
+  if (S.following.length) { start(); alert(`Stand geladen: ${n} Markierungen (${added} neu übernommen).`); }
+  else {
+    const msg = $('uploadMsg'); msg.className = 'banner info';
+    msg.textContent = `Stand geladen: ${n} Markierungen. Zieh jetzt noch deinen Instagram-Export hinein.`;
+  }
+}
+
+// ---------- derived ----------
+let skipped = new Set();
+let undoStack = [];
+function nonFollowers() {
+  const fs = new Set(S.followers);
+  const arr = S.following.filter(x => !fs.has(x.u));
+  const s = S.settings.sort;
+  arr.sort(s === 'az' ? (a, b) => a.u.localeCompare(b.u)
+    : s === 'new' ? (a, b) => b.t - a.t : (a, b) => (a.t || 9e12) - (b.t || 9e12));
+  return arr;
+}
+function dayKey(ts) { const d = new Date(ts); return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); }
+function todayCount() {
+  const k = dayKey(Date.now());
+  return Object.values(S.status).filter(v => v.s === 'u' && dayKey(v.t) === k).length;
+}
+function fmtDate(ts) { return ts ? new Date(ts * 1000).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'unbekannt'; }
+function sinceText(ts) {
+  if (!ts) return '';
+  const days = (Date.now() / 1000 - ts) / 86400;
+  if (days < 60) return 'seit ' + Math.max(1, Math.round(days)) + ' Tagen';
+  if (days < 730) return 'seit ' + Math.round(days / 30.4) + ' Monaten';
+  return 'seit ' + (days / 365).toFixed(1).replace('.', ',') + ' Jahren';
+}
+const urlOf = u => 'https://www.instagram.com/' + encodeURIComponent(u) + '/';
+function esc(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+// ---------- open profile ----------
+let igWin = null;
+function openProfile(u) {
+  const url = urlOf(u);
+  if (S.settings.popup) {
+    const w = 500, h = Math.min(screen.availHeight - 40, 950);
+    const left = (screen.availLeft || 0) + screen.availWidth - w - 8;
+    const top = (screen.availTop || 0) + 8;
+    // Instagram trennt die Fensterverbindung (COOP), daher altes Fenster nur "versuchen" zu schließen
+    try { if (igWin && !igWin.closed) igWin.close(); } catch (e) {}
+    igWin = window.open(url, '_blank', `popup=yes,width=${w},height=${h},left=${left},top=${top}`);
+  } else {
+    igWin = window.open(url, '_blank');
+  }
+  if (!igWin) showBanner('bad', 'Der Browser hat das Fenster blockiert. Erlaube Pop-ups für diese Seite (Symbol rechts in der Adresszeile).');
+}
+
+// ---------- actions ----------
+function mark(u, s) {
+  undoStack.push({ u, prev: S.status[u] || null, wasSkipped: skipped.has(u) });
+  if (s) S.status[u] = { s, t: Date.now() }; else delete S.status[u];
+  skipped.delete(u);
+  save();
+}
+function current() {
+  const open = nonFollowers().filter(x => !S.status[x.u]);
+  return open.find(x => !skipped.has(x.u)) || open[0] || null;
+}
+function act(s) {
+  const c = current(); if (!c) return;
+  if (s === 'skip') { undoStack.push({ u: c.u, prev: null, wasSkipped: false, skip: true }); skipped.add(c.u); }
+  else mark(c.u, s);
+  render();
+  const n = current();
+  if (n && S.settings.auto && (s === 'u' || s === 'k' || s === 'skip')) openProfile(n.u);
+}
+function undo() {
+  const x = undoStack.pop(); if (!x) return;
+  if (x.skip) skipped.delete(x.u);
+  else { if (x.prev) S.status[x.u] = x.prev; else delete S.status[x.u]; if (x.wasSkipped) skipped.add(x.u); }
+  save(); render();
+}
+
+// ---------- render ----------
+function showBanner(type, text) {
+  const b = $('limitBanner'); b.className = 'banner ' + type; b.textContent = text;
+}
+function renderStats() {
+  const non = nonFollowers();
+  const open = non.filter(x => !S.status[x.u]).length;
+  const today = todayCount(), lim = S.settings.limit;
+  $('sFollowing').textContent = S.following.length;
+  $('sFollowers').textContent = S.followers.length;
+  $('sNon').textContent = non.length;
+  $('sOpen').textContent = open;
+  $('sToday').textContent = today;
+  const b = $('limitBanner');
+  if (today >= lim * 1.5) showBanner('bad', `Du hast heute schon ${today} Accounts entfolgt. Mach besser morgen weiter, sonst kann Instagram dein Konto vorübergehend einschränken.`);
+  else if (today >= lim) showBanner('warn', `${today} heute entfolgt, dein Tageslimit von ${lim} ist erreicht. Am besten für heute aufhören.`);
+  else b.className = 'banner hide';
+  const done = non.length - open;
+  $('progText').textContent = `${done} von ${non.length} erledigt`;
+  $('progBar').style.width = non.length ? (done / non.length * 100) + '%' : '0';
+  $('loadedInfo').textContent = S.loadedAt ? 'Export geladen am ' + new Date(S.loadedAt).toLocaleString('de-DE') : '';
+}
+function renderFocus() {
+  const c = current(), box = $('focusBox');
+  if (!c) {
+    box.innerHTML = `<div class="done">🎉</div><div class="user" style="font-size:22px">Alles erledigt</div>
+      <div class="meta">Alle, die dir nicht zurückfolgen, sind abgearbeitet.<br>Sichere jetzt deinen Stand als Datei, dann musst du beim nächsten Mal nur die neuen Accounts durchgehen.<br>Tipp: In der Instagram-App unter Profil → Gefolgt → „Am wenigsten interagiert“ findest du Accounts, die du kaum noch ansiehst.</div>
+      <div class="row2"><button class="btn primary" data-a="backup">Stand als Datei sichern</button>
+      ${undoStack.length ? '<button class="btn" data-a="undo">Rückgängig<kbd>Z</kbd></button>' : ''}</div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="muted small">folgt dir nicht zurück${skipped.has(c.u) ? ' · übersprungen' : ''}</div>
+    <div class="user">@${esc(c.u)}</div>
+    <div class="meta">Gefolgt am ${fmtDate(c.t)} ${c.t ? '(' + sinceText(c.t) + ')' : ''}</div>
+    <div class="row2" style="margin:0 0 16px"><button class="btn primary" data-a="open" style="padding:12px 26px;font-size:16px">Profil öffnen<kbd>O</kbd></button></div>
+    <div class="big">
+      <button class="btn bad" data-a="u">Entfolgt ✓<kbd>E</kbd></button>
+      <button class="btn good" data-a="k">Behalten<kbd>B</kbd></button>
+    </div>
+    <div class="row2">
+      <button class="btn sm" data-a="skip">Überspringen<kbd>S</kbd></button>
+      <button class="btn sm" data-a="undo" ${undoStack.length ? '' : 'disabled'}>Rückgängig<kbd>Z</kbd></button>
+    </div>
+    <div class="muted small" style="margin-top:16px">Im Instagram-Fenster: entfolgen → <b>Strg+W</b> → hier <kbd>E</kbd></div>`;
+}
+let listFilter = 'open', listLimit = 200;
+function renderList() {
+  const q = $('search').value.trim().toLowerCase();
+  let arr = nonFollowers();
+  if (listFilter === 'all') {
+    const known = new Set(arr.map(x => x.u));
+    // include kept/unfollowed accounts that might now follow back or be missing from new export
+    Object.keys(S.status).forEach(u => { if (!known.has(u)) arr.push({ u, t: 0 }); });
+  }
+  arr = arr.filter(x => {
+    const st = S.status[x.u]?.s;
+    if (listFilter === 'open' && st) return false;
+    if (listFilter === 'u' && st !== 'u') return false;
+    if (listFilter === 'k' && st !== 'k') return false;
+    return !q || x.u.includes(q);
+  });
+  if (listFilter === 'u' || listFilter === 'k') {
+    const known = new Set(arr.map(x => x.u));
+    Object.entries(S.status).forEach(([u, v]) => { if (v.s === listFilter && !known.has(u) && (!q || u.includes(q))) arr.push({ u, t: 0 }); });
+  }
+  $('listCount').textContent = arr.length + ' Accounts';
+  $('list').innerHTML = arr.slice(0, listLimit).map(x => {
+    const st = S.status[x.u]?.s;
+    const pill = st === 'u' ? '<span class="pill u">entfolgt</span>' : st === 'k' ? '<span class="pill k">behalten</span>' : '';
+    const btns = st
+      ? `<button class="btn sm" data-l="reset" data-u="${esc(x.u)}">Zurücksetzen</button>`
+      : `<button class="btn sm bad" data-l="u" data-u="${esc(x.u)}">Entfolgt</button><button class="btn sm good" data-l="k" data-u="${esc(x.u)}">Behalten</button>`;
+    return `<div class="item"><div class="name"><a href="${urlOf(x.u)}" data-l="open" data-u="${esc(x.u)}">@${esc(x.u)}</a></div>
+      <span class="date">${x.t ? fmtDate(x.t) : ''}</span>${pill}${btns}</div>`;
+  }).join('') || '<p class="muted small" style="padding:12px 0">Keine Accounts.</p>';
+  $('more').classList.toggle('hide', arr.length <= listLimit);
+}
+function render() { renderStats(); renderFocus(); if (!$('tabList').classList.contains('hide')) renderList(); }
+
+function start() {
+  $('viewUpload').classList.add('hide');
+  $('viewMain').classList.remove('hide');
+  $('sort').value = S.settings.sort;
+  $('optPopup').checked = S.settings.popup;
+  $('optAuto').checked = S.settings.auto;
+  $('optLimit').value = S.settings.limit;
+  render();
+}
+
+// ---------- events ----------
+const drop = $('drop'), fileIn = $('file');
+drop.addEventListener('click', () => fileIn.click());
+fileIn.addEventListener('change', () => { handleFiles([...fileIn.files]); fileIn.value = ''; });
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => handleFiles([...e.dataTransfer.files]));
+
+document.querySelectorAll('.tabs [data-view]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tabs [data-view]').forEach(x => x.classList.toggle('on', x === b));
+  $('tabFocus').classList.toggle('hide', b.dataset.view !== 'focus');
+  $('tabList').classList.toggle('hide', b.dataset.view !== 'list');
+  $('tabSettings').classList.toggle('hide', b.dataset.view !== 'settings');
+  render();
+}));
+
+$('focusBox').addEventListener('click', e => {
+  const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
+  if (a === 'open') { const c = current(); if (c) openProfile(c.u); }
+  else if (a === 'undo') undo();
+  else if (a === 'backup') downloadBackup();
+  else act(a);
+});
+
+$('listFilter').addEventListener('click', e => {
+  const b = e.target.closest('[data-f]'); if (!b) return;
+  listFilter = b.dataset.f; listLimit = 200;
+  $('listFilter').querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
+  renderList();
+});
+$('search').addEventListener('input', () => { listLimit = 200; renderList(); });
+$('more').addEventListener('click', () => { listLimit += 200; renderList(); });
+$('list').addEventListener('click', e => {
+  const el = e.target.closest('[data-l]'); if (!el) return;
+  e.preventDefault();
+  const u = el.dataset.u, l = el.dataset.l;
+  if (l === 'open') openProfile(u);
+  else mark(u, l === 'reset' ? null : l);
+  render();
+});
+
+$('sort').addEventListener('change', e => { S.settings.sort = e.target.value; save(); render(); });
+$('optPopup').addEventListener('change', e => { S.settings.popup = e.target.checked; save(); });
+$('optAuto').addEventListener('change', e => { S.settings.auto = e.target.checked; save(); });
+$('optLimit').addEventListener('change', e => { S.settings.limit = Math.max(10, +e.target.value || 100); save(); render(); });
+$('btnBackup').addEventListener('click', downloadBackup);
+$('btnRestore').addEventListener('click', () => $('restoreFile').click());
+$('restoreFile').addEventListener('change', e => { handleFiles([...e.target.files]); e.target.value = ''; });
+$('btnNew').addEventListener('click', () => { $('viewMain').classList.add('hide'); $('viewUpload').classList.remove('hide'); });
+$('btnReset').addEventListener('click', () => {
+  if (!confirm('Wirklich alles löschen? Deine Markierungen (entfolgt/behalten) gehen verloren.')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  location.reload();
+});
+
+document.addEventListener('keydown', e => {
+  if ($('viewMain').classList.contains('hide') || $('tabFocus').classList.contains('hide')) return;
+  if (e.ctrlKey || e.metaKey || e.altKey || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  const k = e.key.toLowerCase();
+  if (k === 'e') act('u');
+  else if (k === 'b') act('k');
+  else if (k === 's') act('skip');
+  else if (k === 'z') undo();
+  else if (k === 'o') { const c = current(); if (c) openProfile(c.u); }
+  else return;
+  e.preventDefault();
+});
+
+if (S.following.length) start();
+})();
+</script>
+</body>
+</html>

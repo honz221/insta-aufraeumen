@@ -1,0 +1,11 @@
+# Persönliche Daten – niemals hochladen
+*.zip
+insta-aufraeumen-stand-*.json
+followers_*.json
+following.json
+connections/
+
+# System
+.claude/
+.DS_Store
+Thumbs.db
