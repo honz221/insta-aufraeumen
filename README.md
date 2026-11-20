@@ -1,14 +1,12 @@
 # Insta Aufräumen
 
-## 👉 [Tool jetzt öffnen](https://honz221.github.io/insta-aufraeumen/)
-
-**https://honz221.github.io/insta-aufraeumen/**: läuft direkt im Browser, ohne Installation.
-
 Finde heraus, wer dir auf Instagram nicht zurückfolgt, und entfolge diesen Accounts schnell per Tastatur. Das Tool läuft **komplett lokal**, braucht **keinen Login** und klickt **nichts automatisch** für dich.
 
-[![Screenshot mit Beispieldaten](docs/screenshot.jpg)](https://honz221.github.io/insta-aufraeumen/)
+**[Im Browser öffnen](https://honz221.github.io/insta-aufraeumen/)** · [Anleitung](#so-funktionierts) · [Unterstützen](#unterstützen)
 
-Alternativ kannst du `insta-aufraeumen.html` herunterladen und per Doppelklick öffnen.
+![Screenshot mit Beispieldaten](docs/screenshot.jpg)
+
+Du kannst auch `insta-aufraeumen.html` herunterladen und per Doppelklick öffnen.
 
 ## Warum noch ein Unfollow-Tool?
 
@@ -58,6 +56,14 @@ Dafür hat Instagram selbst eine Funktion: In der App unter **Profil → Gefolgt
 - Benötigt einen aktuellen Browser (Chrome, Edge, Brave, Firefox, Safari). Für ZIP-Dateien wird beim Öffnen einmalig [JSZip](https://stuk.github.io/jszip/) von cdnjs geladen.
 - Gelöschte oder umbenannte Accounts zeigen bei Instagram „Seite nicht verfügbar“. Diese einfach mit `E` wegklicken.
 - Instagram ändert gelegentlich das Format des Exports. Falls etwas nicht klappt, eröffne bitte ein Issue.
+
+## Unterstützen
+
+Das Tool ist kostenlos und bleibt es auch. Wenn es dir Zeit gespart hat und du etwas zurückgeben möchtest:
+
+**[Einen Kaffee spendieren](https://honz221.github.io/insta-aufraeumen/support.html)**
+
+Ein ⭐ für das Repository freut mich genauso.
 
 ## Haftungsausschluss
 
