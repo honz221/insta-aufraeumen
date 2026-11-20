@@ -1,80 +1,79 @@
-# Insta Aufräumen
+**English** | [Deutsch](README.de.md)
 
-Finde heraus, wer dir auf Instagram nicht zurückfolgt, und entfolge diesen Accounts schnell per Tastatur. Das Tool läuft **komplett lokal**, braucht **keinen Login** und klickt **nichts automatisch** für dich.
+# Insta Cleanup
 
-**[Im Browser öffnen](https://honz221.github.io/insta-aufraeumen/)** · [Anleitung](#so-funktionierts) · [Unterstützen](#unterstützen)
+Find out who doesn't follow you back on Instagram and unfollow them quickly with your keyboard. The tool runs **entirely locally**, needs **no login** and **never clicks anything automatically** for you.
 
-![Screenshot mit Beispieldaten](docs/screenshot.jpg)
+**[Open in your browser](https://honz221.github.io/insta-aufraeumen/)** · [How it works](#how-it-works) · [Support](#support)
 
-Du kannst auch `insta-aufraeumen.html` herunterladen und per Doppelklick öffnen.
+![Screenshot with sample data](docs/screenshot-en.jpg)
 
-## Warum noch ein Unfollow-Tool?
+You can also download `insta-aufraeumen.html` and open it with a double-click. The tool is available in English and German, and you can switch languages in the top right.
 
-Die meisten Tools wollen dein Instagram-Passwort oder entfolgen per Skript automatisch. Beides verstößt gegen die Nutzungsbedingungen von Instagram und kann zur Sperre deines Accounts führen. Dieses Tool macht es anders:
+## Why another unfollow tool?
 
-- 🔒 **Deine Daten bleiben auf deinem Rechner.** Es wird nichts hochgeladen, es gibt keinen Server und kein Tracking.
-- 🙅 **Kein Login, keine Automatik.** Du entfolgst selbst, das Tool sorgt nur dafür, dass es schnell geht.
-- ⌨️ **Schneller Durchklick-Modus.** Pro Account dauert es nur wenige Sekunden: `O` öffnet das Profil, du entfolgst, schließt mit `Strg+W` und drückst `E`.
-- ✅ **„Behalten“-Markierung.** Freunde und Lieblings-Accounts tauchen nie wieder auf.
-- 🛑 **Tageslimit mit Warnung**, damit Instagram dich nicht drosselt.
-- 💾 **Fortschritt sichern.** Beim nächsten Export siehst du nur die neuen Accounts.
+Most tools either want your Instagram password or unfollow automatically using scripts. Both break Instagram's Terms of Use and can get your account blocked. This tool works differently:
 
-## So funktioniert's
+- 🔒 **Your data stays on your computer.** Nothing is uploaded, and there's no server and no tracking.
+- 🙅 **No login, no automation.** You do the unfollowing yourself. The tool just makes it fast.
+- ⌨️ **Fast step-through mode.** Each account takes only a few seconds: `O` opens the profile, you unfollow, close it with `Ctrl+W` and press `E`.
+- ✅ **"Keep" marker.** Friends and favourite accounts never show up again.
+- 🛑 **Daily limit with a warning**, so Instagram doesn't throttle you.
+- 💾 **Back up your progress.** With your next export you'll only see new accounts.
 
-### 1. Instagram-Export anfordern
-1. Instagram → **Einstellungen → Kontenübersicht**
-2. **Deine Informationen und Berechtigungen → Deine Informationen herunterladen**
-3. **Einige deiner Informationen** → nur **„Follower und gefolgte Personen“** auswählen
-4. **Auf Gerät herunterladen**: Zeitraum **Gesamter Zeitraum**, Format **JSON** (nicht HTML!)
-5. Nach ein paar Minuten kommt eine Mail mit dem Download-Link
+## How it works
 
-### 2. Export ins Tool ziehen
-Die ZIP-Datei einfach in das Tool ziehen. Alternativ gehen auch die einzelnen Dateien `followers_1.json` und `following.json`.
+### 1. Request your Instagram export
+1. Instagram → **Settings → Accounts Center**
+2. **Your information and permissions → Download your information**
+3. **Download or transfer information** → choose your Instagram account
+4. **Some of your information** → select only **"Followers and following"**
+5. **Download to device**: date range **All time**, format **JSON** (not HTML!)
+6. After a few minutes you'll get an email with the download link
 
-### 3. Durchklicken
-| Taste | Aktion |
+Instagram renames these menus from time to time, so the labels may differ slightly.
+
+### 2. Drop the export into the tool
+Just drop the ZIP file into the tool. The individual files `followers_1.json` and `following.json` work too.
+
+### 3. Step through
+| Key | Action |
 |---|---|
-| `O` | Profil öffnen (als schmales Fenster rechts) |
-| `E` | Entfolgt, weiter zum nächsten |
-| `B` | Behalten, taucht nie wieder auf |
-| `S` | Überspringen |
-| `Z` | Rückgängig |
+| `O` | Open profile (as a narrow window on the right) |
+| `E` | Unfollowed, go to the next one |
+| `B` | Keep, never show again |
+| `S` | Skip |
+| `Z` | Undo |
 
-Am schnellsten geht es so: **Gefolgt → Nicht mehr folgen → `Strg+W` → `E`**
+The fastest flow: **Following → Unfollow → `Ctrl+W` (Mac: `⌘W`) → `E`**
 
-> Warum `Strg+W`? Instagram trennt aus Sicherheitsgründen die Verbindung zu dem Fenster, das es geöffnet hat. Das Tool kann das Instagram-Fenster deshalb nicht selbst schließen.
+> Why `Ctrl+W`? For security reasons, Instagram cuts the connection to the window that opened it. That's why the tool can't close the Instagram window itself.
 
-### 4. Stand sichern
-Der Fortschritt wird automatisch im Browser gespeichert. Zur Sicherheit kannst du ihn unter **Einstellungen → „Stand als Datei sichern“** als Datei exportieren. Beim nächsten Mal ziehst du einfach den neuen Export und die Sicherungsdatei zusammen ins Tool.
+### 4. Back up your progress
+Your progress is saved in your browser automatically. To be safe, you can export it as a file under **Settings → "Save backup file"**. Next time, just drop your new export and the backup file into the tool together.
 
-## Tipp: Accounts, die du nicht mehr ansiehst
+## Tip: accounts you no longer look at
 
-Dafür hat Instagram selbst eine Funktion: In der App unter **Profil → Gefolgt → „Am wenigsten interagiert“**.
+Instagram has a feature for this. In the app, go to **Profile → Following → "Least interacted with"**.
 
-## Hinweise
+## Notes
 
-- Benötigt einen aktuellen Browser (Chrome, Edge, Brave, Firefox, Safari). Für ZIP-Dateien wird beim Öffnen einmalig [JSZip](https://stuk.github.io/jszip/) von cdnjs geladen.
-- Gelöschte oder umbenannte Accounts zeigen bei Instagram „Seite nicht verfügbar“. Diese einfach mit `E` wegklicken.
-- Instagram ändert gelegentlich das Format des Exports. Falls etwas nicht klappt, eröffne bitte ein Issue.
+- Requires a recent browser (Chrome, Edge, Brave, Firefox, Safari). For ZIP files, [JSZip](https://stuk.github.io/jszip/) is loaded once from cdnjs.
+- Deleted or renamed accounts show "Sorry, this page isn't available" on Instagram. Just skip past them with `E`.
+- Instagram occasionally changes the export format. If something doesn't work, please open an issue.
 
-## Unterstützen
+## Support
 
-Das Tool ist kostenlos und bleibt es auch. Wenn es dir Zeit gespart hat und du etwas zurückgeben möchtest:
+The tool is free and will stay free. If it saved you time and you'd like to give something back:
 
-**[Einen Kaffee spendieren auf Ko-fi](https://ko-fi.com/honz221)**
+**[Buy me a coffee on Ko-fi](https://ko-fi.com/honz221)**
 
-Ein ⭐ für das Repository freut mich genauso.
+A ⭐ for the repository makes me just as happy.
 
-## Haftungsausschluss
+## Disclaimer
 
-Dieses Projekt steht in keiner Verbindung zu Instagram oder Meta Platforms, Inc. „Instagram“ ist eine Marke von Meta Platforms, Inc. Die Nutzung erfolgt auf eigene Verantwortung.
+This project is not affiliated with Instagram or Meta Platforms, Inc. "Instagram" is a trademark of Meta Platforms, Inc. Use at your own risk.
 
-## Lizenz
+## License
 
 [MIT](LICENSE)
-
----
-
-### English
-
-**Insta Aufräumen** ("Instagram clean-up") is a single-file, fully local web tool. You load your Instagram data export, see who doesn't follow you back and step through them quickly with keyboard shortcuts. There's no login and no automation, and nothing leaves your computer. The UI is currently German only.

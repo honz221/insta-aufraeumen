@@ -75,32 +75,42 @@ input[type=search]{width:100%;margin-bottom:12px}
 .done{font-size:40px;margin-bottom:6px}
 .foot{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}
 @media (max-width:560px){.item .date{display:none}.focus .user{font-size:24px}}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
+.head h1{margin:0}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex-shrink:0}
+.lang button{border:0;background:transparent;color:var(--muted);padding:5px 11px;font-size:13px;font-weight:600}
+.lang button.on{background:var(--text);color:var(--bg)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Insta Aufräumen</h1>
-  <p class="sub">Findet Accounts, die dir nicht zurückfolgen, damit du ihnen schnell entfolgen kannst. Deine Daten bleiben auf diesem Rechner.</p>
+  <div class="head">
+    <h1 data-i18n="title">Insta Aufräumen</h1>
+    <div class="lang" role="group" aria-label="Sprache / Language">
+      <button data-lang="de">DE</button><button data-lang="en">EN</button>
+    </div>
+  </div>
+  <p class="sub" data-i18n="sub"></p>
 
   <!-- ===== Upload ===== -->
   <section id="viewUpload">
     <div class="card">
       <div class="drop" id="drop">
-        <b>Instagram-Export hier hineinziehen</b>
-        <span class="muted">ZIP-Datei oder <code>followers_1.json</code> + <code>following.json</code>, oder klicken zum Auswählen</span>
+        <b data-i18n="dropTitle"></b>
+        <span class="muted" data-i18n="dropSub"></span>
         <input type="file" id="file" multiple accept=".zip,.json" class="hide">
       </div>
       <div id="uploadMsg" class="banner bad hide" style="margin-top:14px"></div>
     </div>
     <div class="card">
-      <h2>So bekommst du den Export</h2>
+      <h2 data-i18n="howTitle"></h2>
       <ol>
-        <li>Instagram öffnen, dann <b>Einstellungen → Kontenübersicht</b></li>
-        <li><b>Deine Informationen und Berechtigungen → Deine Informationen herunterladen</b></li>
-        <li><b>Herunterladen oder übertragen</b>, dann dein Instagram-Konto wählen</li>
-        <li><b>Einige deiner Informationen</b> und nur <b>„Follower und gefolgte Personen“</b> anhaken</li>
-        <li><b>Auf Gerät herunterladen</b>: Zeitraum <b>Gesamter Zeitraum</b>, Format <b>JSON</b> (wichtig, nicht HTML)</li>
-        <li>Wenn die Mail kommt (meist nach wenigen Minuten), die ZIP herunterladen und hier hineinziehen</li>
+        <li data-i18n="how1"></li>
+        <li data-i18n="how2"></li>
+        <li data-i18n="how3"></li>
+        <li data-i18n="how4"></li>
+        <li data-i18n="how5"></li>
+        <li data-i18n="how6"></li>
       </ol>
     </div>
   </section>
@@ -109,20 +119,20 @@ input[type=search]{width:100%;margin-bottom:12px}
   <section id="viewMain" class="hide">
     <div class="card">
       <div class="stats">
-        <div class="stat"><div class="n" id="sFollowing">0</div><div class="l">Du folgst</div></div>
-        <div class="stat"><div class="n" id="sFollowers">0</div><div class="l">Folgen dir</div></div>
-        <div class="stat"><div class="n" id="sNon">0</div><div class="l">Folgen nicht zurück</div></div>
-        <div class="stat"><div class="n" id="sOpen">0</div><div class="l">Noch offen</div></div>
-        <div class="stat"><div class="n" id="sToday">0</div><div class="l">Heute entfolgt</div></div>
+        <div class="stat"><div class="n" id="sFollowing">0</div><div class="l" data-i18n="statFollowing"></div></div>
+        <div class="stat"><div class="n" id="sFollowers">0</div><div class="l" data-i18n="statFollowers"></div></div>
+        <div class="stat"><div class="n" id="sNon">0</div><div class="l" data-i18n="statNon"></div></div>
+        <div class="stat"><div class="n" id="sOpen">0</div><div class="l" data-i18n="statOpen"></div></div>
+        <div class="stat"><div class="n" id="sToday">0</div><div class="l" data-i18n="statToday"></div></div>
       </div>
     </div>
 
     <div id="limitBanner" class="banner hide"></div>
 
     <div class="tabs">
-      <button class="tab on" data-view="focus">Durchklicken</button>
-      <button class="tab" data-view="list">Liste</button>
-      <button class="tab" data-view="settings">Einstellungen</button>
+      <button class="tab on" data-view="focus" data-i18n="tabFocus"></button>
+      <button class="tab" data-view="list" data-i18n="tabList"></button>
+      <button class="tab" data-view="settings" data-i18n="tabSettings"></button>
     </div>
 
     <!-- Focus mode -->
@@ -132,80 +142,206 @@ input[type=search]{width:100%;margin-bottom:12px}
         <div class="progress"><div id="progBar"></div></div>
         <div id="focusBox" class="focus"></div>
       </div>
-      <div class="card small muted">
-        <b>So geht's am schnellsten:</b> Drück <kbd>O</kbd>. Instagram öffnet sich als schmales Fenster rechts.
-        Dort <b>Gefolgt → Nicht mehr folgen</b> klicken, dann <b>Strg+W</b>: Das schließt das Instagram-Fenster und du bist zurück im Tool.
-        Jetzt <kbd>E</kbd> drücken, dann öffnet sich das nächste Profil automatisch. Ablauf also: <b>entfolgen → Strg+W → E</b>.
-        <br>(Das Tool kann das Instagram-Fenster nicht selbst schließen, das blockiert Instagram aus Sicherheitsgründen.)<br>
-        Tasten: <kbd>E</kbd> entfolgt · <kbd>B</kbd> behalten · <kbd>S</kbd> überspringen · <kbd>Z</kbd> rückgängig · <kbd>O</kbd> Profil öffnen
-      </div>
+      <div class="card small muted" data-i18n="help"></div>
     </div>
 
     <!-- List mode -->
     <div id="tabList" class="hide">
       <div class="card">
         <div class="tabs" id="listFilter">
-          <button class="tab on" data-f="open">Offen</button>
-          <button class="tab" data-f="u">Entfolgt</button>
-          <button class="tab" data-f="k">Behalten</button>
-          <button class="tab" data-f="all">Alle</button>
+          <button class="tab on" data-f="open" data-i18n="fOpen"></button>
+          <button class="tab" data-f="u" data-i18n="fU"></button>
+          <button class="tab" data-f="k" data-i18n="fK"></button>
+          <button class="tab" data-f="all" data-i18n="fAll"></button>
         </div>
-        <input type="search" id="search" placeholder="Benutzernamen suchen …">
+        <input type="search" id="search" data-i18n-ph="searchPh">
         <div class="muted small" id="listCount" style="margin-bottom:6px"></div>
         <div class="list" id="list"></div>
-        <div class="row2"><button class="btn hide" id="more">Mehr anzeigen</button></div>
+        <div class="row2"><button class="btn hide" id="more" data-i18n="more"></button></div>
       </div>
     </div>
 
     <!-- Settings -->
     <div id="tabSettings" class="hide">
       <div class="card">
-        <h2>Reihenfolge</h2>
+        <h2 data-i18n="sortTitle"></h2>
         <select id="sort">
-          <option value="old">Am längsten gefolgt zuerst</option>
-          <option value="new">Zuletzt gefolgt zuerst</option>
-          <option value="az">Alphabetisch</option>
+          <option value="old" data-i18n="sortOld"></option>
+          <option value="new" data-i18n="sortNew"></option>
+          <option value="az" data-i18n="sortAz"></option>
         </select>
-        <h2 style="margin-top:20px">Verhalten</h2>
+        <h2 style="margin-top:20px" data-i18n="behTitle"></h2>
         <div class="opts" style="flex-direction:column;align-items:flex-start">
-          <label><input type="checkbox" id="optPopup" checked> Instagram als schmales Seitenfenster rechts öffnen</label>
-          <label><input type="checkbox" id="optAuto" checked> Nach Entfolgt/Behalten das nächste Profil automatisch öffnen</label>
+          <label><input type="checkbox" id="optPopup" checked> <span data-i18n="optPopup"></span></label>
+          <label><input type="checkbox" id="optAuto" checked> <span data-i18n="optAuto"></span></label>
         </div>
-        <h2 style="margin-top:20px">Tageslimit</h2>
+        <h2 style="margin-top:20px" data-i18n="limitTitle"></h2>
         <div class="opts">
-          <label>Warnung ab <input type="number" id="optLimit" min="10" max="500" value="100" style="width:80px;font:inherit;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text)"> Entfolgungen pro Tag</label>
+          <label><span data-i18n="limitPre"></span> <input type="number" id="optLimit" min="10" max="500" value="100" style="width:80px;font:inherit;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text)"> <span data-i18n="limitPost"></span></label>
         </div>
-        <p class="small muted">Instagram drosselt Accounts, die zu schnell entfolgen. 100 bis 150 pro Tag sind meist unproblematisch. Wenn Instagram „Versuche es später erneut“ anzeigt, hör für heute auf.</p>
+        <p class="small muted" data-i18n="limitNote"></p>
       </div>
       <div class="card">
-        <h2>Stand sichern</h2>
-        <p class="small muted" style="margin-top:0">Dein Stand wird im Browser gespeichert. Wenn du die Browserdaten löschst oder den Browser wechselst, ist er aber weg. Sichere ihn deshalb als Datei, am besten in diesen Ordner. Zum Wiederherstellen die Datei einfach ins Tool ziehen oder auf „Stand laden“ klicken.</p>
+        <h2 data-i18n="backupTitle"></h2>
+        <p class="small muted" style="margin-top:0" data-i18n="backupNote"></p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px">
-          <button class="btn primary" id="btnBackup">Stand als Datei sichern</button>
-          <button class="btn" id="btnRestore">Stand laden</button>
+          <button class="btn primary" id="btnBackup" data-i18n="btnBackup"></button>
+          <button class="btn" id="btnRestore" data-i18n="btnRestore"></button>
           <input type="file" id="restoreFile" accept=".json" class="hide">
         </div>
-        <h2>Daten</h2>
+        <h2 data-i18n="dataTitle"></h2>
         <div class="foot">
           <span class="small muted" id="loadedInfo"></span>
           <span style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn" id="btnNew">Neuen Export laden</button>
-            <button class="btn bad" id="btnReset">Alles zurücksetzen</button>
+            <button class="btn" id="btnNew" data-i18n="btnNew"></button>
+            <button class="btn bad" id="btnReset" data-i18n="btnReset"></button>
           </span>
         </div>
-        <p class="small muted">„Neuen Export laden“ behält deine Markierungen (entfolgt/behalten). „Alles zurücksetzen“ löscht alles.</p>
+        <p class="small muted" data-i18n="dataNote"></p>
       </div>
     </div>
   </section>
-  <p class="small muted" style="text-align:center;margin-top:28px">Läuft komplett lokal, es werden keine Daten hochgeladen. Kein offizielles Tool, steht in keiner Verbindung zu Instagram oder Meta.<br>
-    <a href="https://github.com/honz221/insta-aufraeumen" target="_blank" rel="noopener" style="color:inherit">Quellcode auf GitHub</a> · <a href="https://ko-fi.com/honz221" target="_blank" rel="noopener" style="color:inherit">Unterstützen ☕</a></p>
+  <p class="small muted" style="text-align:center;margin-top:28px"><span data-i18n="footer"></span><br>
+    <a href="https://github.com/honz221/insta-aufraeumen" target="_blank" rel="noopener" style="color:inherit" data-i18n="source"></a> · <a href="https://ko-fi.com/honz221" target="_blank" rel="noopener" style="color:inherit" data-i18n="support"></a></p>
 </div>
 
 <script>
 (() => {
 'use strict';
 const KEY = 'igAufraeumen.v1';
+const LANG_KEY = 'igAufraeumen.lang';
 const $ = id => document.getElementById(id);
+
+// ---------- i18n ----------
+const I18N = {
+de: {
+  docTitle: 'Insta Aufräumen',
+  title: 'Insta Aufräumen',
+  sub: 'Findet Accounts, die dir nicht zurückfolgen, damit du ihnen schnell entfolgen kannst. Deine Daten bleiben auf diesem Rechner.',
+  dropTitle: 'Instagram-Export hier hineinziehen',
+  dropSub: 'ZIP-Datei oder <code>followers_1.json</code> + <code>following.json</code>, oder klicken zum Auswählen',
+  howTitle: 'So bekommst du den Export',
+  how1: 'Instagram öffnen, dann <b>Einstellungen → Kontenübersicht</b>',
+  how2: '<b>Deine Informationen und Berechtigungen → Deine Informationen herunterladen</b>',
+  how3: '<b>Herunterladen oder übertragen</b>, dann dein Instagram-Konto wählen',
+  how4: '<b>Einige deiner Informationen</b> und nur <b>„Follower und gefolgte Personen“</b> anhaken',
+  how5: '<b>Auf Gerät herunterladen</b>: Zeitraum <b>Gesamter Zeitraum</b>, Format <b>JSON</b> (wichtig, nicht HTML)',
+  how6: 'Wenn die Mail kommt (meist nach wenigen Minuten), die ZIP herunterladen und hier hineinziehen',
+  statFollowing: 'Du folgst', statFollowers: 'Folgen dir', statNon: 'Folgen nicht zurück', statOpen: 'Noch offen', statToday: 'Heute entfolgt',
+  tabFocus: 'Durchklicken', tabList: 'Liste', tabSettings: 'Einstellungen',
+  help: '<b>So geht\'s am schnellsten:</b> Drück <kbd>O</kbd>. Instagram öffnet sich als schmales Fenster rechts. Dort <b>Gefolgt → Nicht mehr folgen</b> klicken, dann <b>Strg+W</b> (Mac: <b>⌘W</b>): Das schließt das Instagram-Fenster und du bist zurück im Tool. Jetzt <kbd>E</kbd> drücken, dann öffnet sich das nächste Profil automatisch. Ablauf also: <b>entfolgen → Strg+W → E</b>.<br>(Das Tool kann das Instagram-Fenster nicht selbst schließen, das blockiert Instagram aus Sicherheitsgründen.)<br>Tasten: <kbd>E</kbd> entfolgt · <kbd>B</kbd> behalten · <kbd>S</kbd> überspringen · <kbd>Z</kbd> rückgängig · <kbd>O</kbd> Profil öffnen',
+  fOpen: 'Offen', fU: 'Entfolgt', fK: 'Behalten', fAll: 'Alle',
+  searchPh: 'Benutzernamen suchen …', more: 'Mehr anzeigen',
+  sortTitle: 'Reihenfolge', sortOld: 'Am längsten gefolgt zuerst', sortNew: 'Zuletzt gefolgt zuerst', sortAz: 'Alphabetisch',
+  behTitle: 'Verhalten', optPopup: 'Instagram als schmales Seitenfenster rechts öffnen', optAuto: 'Nach Entfolgt/Behalten das nächste Profil automatisch öffnen',
+  limitTitle: 'Tageslimit', limitPre: 'Warnung ab', limitPost: 'Entfolgungen pro Tag',
+  limitNote: 'Instagram drosselt Accounts, die zu schnell entfolgen. 100 bis 150 pro Tag sind meist unproblematisch. Wenn Instagram „Versuche es später erneut“ anzeigt, hör für heute auf.',
+  backupTitle: 'Stand sichern',
+  backupNote: 'Dein Stand wird im Browser gespeichert. Wenn du die Browserdaten löschst oder den Browser wechselst, ist er aber weg. Sichere ihn deshalb als Datei. Zum Wiederherstellen die Datei einfach ins Tool ziehen oder auf „Stand laden“ klicken.',
+  btnBackup: 'Stand als Datei sichern', btnRestore: 'Stand laden',
+  dataTitle: 'Daten', btnNew: 'Neuen Export laden', btnReset: 'Alles zurücksetzen',
+  dataNote: '„Neuen Export laden“ behält deine Markierungen (entfolgt/behalten). „Alles zurücksetzen“ löscht alles.',
+  footer: 'Läuft komplett lokal, es werden keine Daten hochgeladen. Kein offizielles Tool, steht in keiner Verbindung zu Instagram oder Meta.',
+  source: 'Quellcode auf GitHub', support: 'Unterstützen ☕',
+  errZip: 'ZIP-Bibliothek konnte nicht geladen werden (Internet nötig). Entpacke die ZIP und zieh die beiden JSON-Dateien hinein.',
+  errHtml: 'Der Export ist im HTML-Format. Bitte fordere ihn nochmal im Format JSON an.',
+  errMissing: 'Nicht gefunden: {files}. Ist es der richtige Export mit „Follower und gefolgte Personen“?',
+  and: ' und ',
+  restoredFull: 'Stand geladen: {n} Markierungen ({added} neu übernommen).',
+  restoredPartial: 'Stand geladen: {n} Markierungen. Zieh jetzt noch deinen Instagram-Export hinein.',
+  popupBlocked: 'Der Browser hat das Fenster blockiert. Erlaube Pop-ups für diese Seite (Symbol rechts in der Adresszeile).',
+  limitBad: 'Du hast heute schon {today} Accounts entfolgt. Mach besser morgen weiter, sonst kann Instagram dein Konto vorübergehend einschränken.',
+  limitWarn: '{today} heute entfolgt, dein Tageslimit von {lim} ist erreicht. Am besten für heute aufhören.',
+  progress: '{done} von {total} erledigt',
+  loadedAt: 'Export geladen am {date}',
+  unknown: 'unbekannt',
+  sinceDays: 'seit {n} Tagen', sinceMonths: 'seit {n} Monaten', sinceYears: 'seit {n} Jahren',
+  doneTitle: 'Alles erledigt',
+  doneText: 'Alle, die dir nicht zurückfolgen, sind abgearbeitet.<br>Sichere jetzt deinen Stand als Datei, dann musst du beim nächsten Mal nur die neuen Accounts durchgehen.<br>Tipp: In der Instagram-App unter Profil → Gefolgt → „Am wenigsten interagiert“ findest du Accounts, die du kaum noch ansiehst.',
+  notFollowing: 'folgt dir nicht zurück', skippedTag: ' · übersprungen',
+  followedOn: 'Gefolgt am {date}',
+  openProfile: 'Profil öffnen', unfollowed: 'Entfolgt ✓', keep: 'Behalten', skip: 'Überspringen', undo: 'Rückgängig',
+  hint: 'Im Instagram-Fenster: entfolgen → <b>Strg+W</b> → hier <kbd>E</kbd>',
+  accounts: '{n} Accounts', pillU: 'entfolgt', pillK: 'behalten', listU: 'Entfolgt', reset: 'Zurücksetzen', noAccounts: 'Keine Accounts.',
+  confirmReset: 'Wirklich alles löschen? Deine Markierungen (entfolgt/behalten) gehen verloren.',
+  backupName: 'insta-aufraeumen-stand'
+},
+en: {
+  docTitle: 'Insta Cleanup',
+  title: 'Insta Cleanup',
+  sub: 'Find accounts that don\'t follow you back and unfollow them quickly. Your data stays on this computer.',
+  dropTitle: 'Drop your Instagram export here',
+  dropSub: 'ZIP file or <code>followers_1.json</code> + <code>following.json</code>, or click to choose',
+  howTitle: 'How to get your export',
+  how1: 'Open Instagram, then go to <b>Settings → Accounts Center</b>',
+  how2: '<b>Your information and permissions → Download your information</b>',
+  how3: '<b>Download or transfer information</b>, then choose your Instagram account',
+  how4: '<b>Some of your information</b>, tick only <b>“Followers and following”</b>',
+  how5: '<b>Download to device</b>: date range <b>All time</b>, format <b>JSON</b> (important: not HTML)',
+  how6: 'When the email arrives (usually within a few minutes), download the ZIP and drop it here',
+  statFollowing: 'You follow', statFollowers: 'Follow you', statNon: 'Don\'t follow back', statOpen: 'Still open', statToday: 'Unfollowed today',
+  tabFocus: 'Step through', tabList: 'List', tabSettings: 'Settings',
+  help: '<b>Fastest way:</b> Press <kbd>O</kbd>. Instagram opens as a narrow window on the right. Click <b>Following → Unfollow</b> there, then press <b>Ctrl+W</b> (Mac: <b>⌘W</b>). This closes the Instagram window and takes you back to the tool. Now press <kbd>E</kbd> and the next profile opens automatically. So the flow is: <b>unfollow → Ctrl+W → E</b>.<br>(The tool can\'t close the Instagram window itself because Instagram blocks that for security reasons.)<br>Keys: <kbd>E</kbd> unfollowed · <kbd>B</kbd> keep · <kbd>S</kbd> skip · <kbd>Z</kbd> undo · <kbd>O</kbd> open profile',
+  fOpen: 'Open', fU: 'Unfollowed', fK: 'Kept', fAll: 'All',
+  searchPh: 'Search usernames …', more: 'Show more',
+  sortTitle: 'Order', sortOld: 'Followed longest first', sortNew: 'Followed most recently first', sortAz: 'Alphabetical',
+  behTitle: 'Behaviour', optPopup: 'Open Instagram as a narrow window on the right', optAuto: 'Automatically open the next profile after Unfollowed/Keep',
+  limitTitle: 'Daily limit', limitPre: 'Warn after', limitPost: 'unfollows per day',
+  limitNote: 'Instagram throttles accounts that unfollow too fast. 100 to 150 per day is usually fine. If Instagram shows “Try again later”, stop for the day.',
+  backupTitle: 'Back up progress',
+  backupNote: 'Your progress is saved in your browser, but it\'s lost if you clear your browser data or switch browsers. So it\'s a good idea to back it up as a file. To restore it, just drop the file into the tool or click “Load backup”.',
+  btnBackup: 'Save backup file', btnRestore: 'Load backup',
+  dataTitle: 'Data', btnNew: 'Load new export', btnReset: 'Reset everything',
+  dataNote: '“Load new export” keeps your marks (unfollowed/kept). “Reset everything” deletes everything.',
+  footer: 'Runs entirely locally and nothing is uploaded. Not an official tool. Not affiliated with Instagram or Meta.',
+  source: 'Source code on GitHub', support: 'Support ☕',
+  errZip: 'Couldn\'t load the ZIP library (needs internet). Unzip the file and drop the two JSON files in instead.',
+  errHtml: 'Your export is in HTML format. Please request it again in JSON format.',
+  errMissing: 'Not found: {files}. Is this the right export with “Followers and following”?',
+  and: ' and ',
+  restoredFull: 'Backup loaded: {n} marks ({added} newly added).',
+  restoredPartial: 'Backup loaded: {n} marks. Now drop in your Instagram export.',
+  popupBlocked: 'Your browser blocked the window. Allow pop-ups for this page (icon on the right of the address bar).',
+  limitBad: 'You\'ve already unfollowed {today} accounts today. Better continue tomorrow, otherwise Instagram may temporarily restrict your account.',
+  limitWarn: '{today} unfollowed today, so you\'ve reached your daily limit of {lim}. Best to stop for today.',
+  progress: '{done} of {total} done',
+  loadedAt: 'Export loaded on {date}',
+  unknown: 'unknown',
+  sinceDays: '{n} days ago', sinceMonths: '{n} months ago', sinceYears: '{n} years ago',
+  doneTitle: 'All done',
+  doneText: 'You\'ve gone through everyone who doesn\'t follow you back.<br>Save a backup now, so next time you only need to go through new accounts.<br>Tip: In the Instagram app, go to Profile → Following → “Least interacted with” to find accounts you rarely look at.',
+  notFollowing: 'doesn\'t follow you back', skippedTag: ' · skipped',
+  followedOn: 'Followed on {date}',
+  openProfile: 'Open profile', unfollowed: 'Unfollowed ✓', keep: 'Keep', skip: 'Skip', undo: 'Undo',
+  hint: 'In the Instagram window: unfollow → <b>Ctrl+W</b> → here <kbd>E</kbd>',
+  accounts: '{n} accounts', pillU: 'unfollowed', pillK: 'kept', listU: 'Unfollowed', reset: 'Reset', noAccounts: 'No accounts.',
+  confirmReset: 'Really delete everything? Your marks (unfollowed/kept) will be lost.',
+  backupName: 'insta-cleanup-backup'
+}
+};
+let lang = 'de';
+try { lang = localStorage.getItem(LANG_KEY) || ''; } catch (e) {}
+if (!I18N[lang]) lang = (navigator.language || '').toLowerCase().startsWith('de') ? 'de' : 'en';
+function t(k, v) {
+  let s = (I18N[lang][k] ?? I18N.de[k] ?? k);
+  if (v) for (const [a, b] of Object.entries(v)) s = s.split('{' + a + '}').join(b);
+  return s;
+}
+const locale = () => lang === 'de' ? 'de-DE' : 'en-GB';
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = t('docTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+}
+function setLang(l) {
+  lang = l;
+  try { localStorage.setItem(LANG_KEY, l); } catch (e) {}
+  applyLang();
+  const msg = $('uploadMsg'); if (msg) msg.classList.add('hide');
+  if (!$('viewMain').classList.contains('hide')) render();
+}
 
 // ---------- storage ----------
 function load() {
@@ -253,7 +389,7 @@ async function handleFiles(files) {
   try {
     for (const f of files) {
       if (/\.zip$/i.test(f.name)) {
-        if (!window.JSZip) throw new Error('ZIP-Bibliothek konnte nicht geladen werden (Internet nötig). Entpacke die ZIP und zieh die beiden JSON-Dateien hinein.');
+        if (!window.JSZip) throw new Error(t('errZip'));
         const zip = await JSZip.loadAsync(f);
         for (const name of Object.keys(zip.files)) {
           const k = kindOf(name);
@@ -274,10 +410,8 @@ async function handleFiles(files) {
     const followers = [], following = [];
     for (const p of parts) (p.kind === 'followers' ? followers : following).push(...collect(JSON.parse(p.text)));
     if (!following.length || !followers.length) {
-      let t = sawHtml
-        ? 'Der Export ist im HTML-Format. Bitte fordere ihn nochmal im Format JSON an.'
-        : 'Nicht gefunden: ' + [!followers.length && 'followers_1.json', !following.length && 'following.json'].filter(Boolean).join(' und ') + '. Ist es der richtige Export mit „Follower und gefolgte Personen“?';
-      throw new Error(t);
+      throw new Error(sawHtml ? t('errHtml')
+        : t('errMissing', { files: [!followers.length && 'followers_1.json', !following.length && 'following.json'].filter(Boolean).join(t('and')) }));
     }
     const fm = new Map(); following.forEach(x => { if (!fm.has(x.u)) fm.set(x.u, x); });
     S.following = [...fm.values()];
@@ -298,7 +432,7 @@ function backupData() {
 }
 function downloadBackup() {
   const d = new Date(), p = n => String(n).padStart(2, '0');
-  const name = `insta-aufraeumen-stand-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}.json`;
+  const name = `${t('backupName')}-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}.json`;
   const url = URL.createObjectURL(new Blob([JSON.stringify(backupData())], { type: 'application/json' }));
   const a = document.createElement('a'); a.href = url; a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
@@ -315,10 +449,10 @@ function restoreBackup(j) {
   }
   save();
   const n = Object.keys(j.status || {}).length;
-  if (S.following.length) { start(); alert(`Stand geladen: ${n} Markierungen (${added} neu übernommen).`); }
+  if (S.following.length) { start(); alert(t('restoredFull', { n, added })); }
   else {
     const msg = $('uploadMsg'); msg.className = 'banner info';
-    msg.textContent = `Stand geladen: ${n} Markierungen. Zieh jetzt noch deinen Instagram-Export hinein.`;
+    msg.textContent = t('restoredPartial', { n });
   }
 }
 
@@ -338,13 +472,13 @@ function todayCount() {
   const k = dayKey(Date.now());
   return Object.values(S.status).filter(v => v.s === 'u' && dayKey(v.t) === k).length;
 }
-function fmtDate(ts) { return ts ? new Date(ts * 1000).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'unbekannt'; }
+function fmtDate(ts) { return ts ? new Date(ts * 1000).toLocaleDateString(locale(), { day: '2-digit', month: '2-digit', year: 'numeric' }) : t('unknown'); }
 function sinceText(ts) {
   if (!ts) return '';
   const days = (Date.now() / 1000 - ts) / 86400;
-  if (days < 60) return 'seit ' + Math.max(1, Math.round(days)) + ' Tagen';
-  if (days < 730) return 'seit ' + Math.round(days / 30.4) + ' Monaten';
-  return 'seit ' + (days / 365).toFixed(1).replace('.', ',') + ' Jahren';
+  if (days < 60) return t('sinceDays', { n: Math.max(1, Math.round(days)) });
+  if (days < 730) return t('sinceMonths', { n: Math.round(days / 30.4) });
+  return t('sinceYears', { n: (days / 365).toLocaleString(locale(), { maximumFractionDigits: 1, minimumFractionDigits: 1 }) });
 }
 const urlOf = u => 'https://www.instagram.com/' + encodeURIComponent(u) + '/';
 function esc(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -363,7 +497,7 @@ function openProfile(u) {
   } else {
     igWin = window.open(url, '_blank');
   }
-  if (!igWin) showBanner('bad', 'Der Browser hat das Fenster blockiert. Erlaube Pop-ups für diese Seite (Symbol rechts in der Adresszeile).');
+  if (!igWin) showBanner('bad', t('popupBlocked'));
 }
 
 // ---------- actions ----------
@@ -406,37 +540,37 @@ function renderStats() {
   $('sOpen').textContent = open;
   $('sToday').textContent = today;
   const b = $('limitBanner');
-  if (today >= lim * 1.5) showBanner('bad', `Du hast heute schon ${today} Accounts entfolgt. Mach besser morgen weiter, sonst kann Instagram dein Konto vorübergehend einschränken.`);
-  else if (today >= lim) showBanner('warn', `${today} heute entfolgt, dein Tageslimit von ${lim} ist erreicht. Am besten für heute aufhören.`);
+  if (today >= lim * 1.5) showBanner('bad', t('limitBad', { today }));
+  else if (today >= lim) showBanner('warn', t('limitWarn', { today, lim }));
   else b.className = 'banner hide';
   const done = non.length - open;
-  $('progText').textContent = `${done} von ${non.length} erledigt`;
+  $('progText').textContent = t('progress', { done, total: non.length });
   $('progBar').style.width = non.length ? (done / non.length * 100) + '%' : '0';
-  $('loadedInfo').textContent = S.loadedAt ? 'Export geladen am ' + new Date(S.loadedAt).toLocaleString('de-DE') : '';
+  $('loadedInfo').textContent = S.loadedAt ? t('loadedAt', { date: new Date(S.loadedAt).toLocaleString(locale()) }) : '';
 }
 function renderFocus() {
   const c = current(), box = $('focusBox');
   if (!c) {
-    box.innerHTML = `<div class="done">🎉</div><div class="user" style="font-size:22px">Alles erledigt</div>
-      <div class="meta">Alle, die dir nicht zurückfolgen, sind abgearbeitet.<br>Sichere jetzt deinen Stand als Datei, dann musst du beim nächsten Mal nur die neuen Accounts durchgehen.<br>Tipp: In der Instagram-App unter Profil → Gefolgt → „Am wenigsten interagiert“ findest du Accounts, die du kaum noch ansiehst.</div>
-      <div class="row2"><button class="btn primary" data-a="backup">Stand als Datei sichern</button>
-      ${undoStack.length ? '<button class="btn" data-a="undo">Rückgängig<kbd>Z</kbd></button>' : ''}</div>`;
+    box.innerHTML = `<div class="done">🎉</div><div class="user" style="font-size:22px">${t('doneTitle')}</div>
+      <div class="meta">${t('doneText')}</div>
+      <div class="row2"><button class="btn primary" data-a="backup">${t('btnBackup')}</button>
+      ${undoStack.length ? `<button class="btn" data-a="undo">${t('undo')}<kbd>Z</kbd></button>` : ''}</div>`;
     return;
   }
   box.innerHTML = `
-    <div class="muted small">folgt dir nicht zurück${skipped.has(c.u) ? ' · übersprungen' : ''}</div>
+    <div class="muted small">${t('notFollowing')}${skipped.has(c.u) ? t('skippedTag') : ''}</div>
     <div class="user">@${esc(c.u)}</div>
-    <div class="meta">Gefolgt am ${fmtDate(c.t)} ${c.t ? '(' + sinceText(c.t) + ')' : ''}</div>
-    <div class="row2" style="margin:0 0 16px"><button class="btn primary" data-a="open" style="padding:12px 26px;font-size:16px">Profil öffnen<kbd>O</kbd></button></div>
+    <div class="meta">${t('followedOn', { date: fmtDate(c.t) })} ${c.t ? '(' + sinceText(c.t) + ')' : ''}</div>
+    <div class="row2" style="margin:0 0 16px"><button class="btn primary" data-a="open" style="padding:12px 26px;font-size:16px">${t('openProfile')}<kbd>O</kbd></button></div>
     <div class="big">
-      <button class="btn bad" data-a="u">Entfolgt ✓<kbd>E</kbd></button>
-      <button class="btn good" data-a="k">Behalten<kbd>B</kbd></button>
+      <button class="btn bad" data-a="u">${t('unfollowed')}<kbd>E</kbd></button>
+      <button class="btn good" data-a="k">${t('keep')}<kbd>B</kbd></button>
     </div>
     <div class="row2">
-      <button class="btn sm" data-a="skip">Überspringen<kbd>S</kbd></button>
-      <button class="btn sm" data-a="undo" ${undoStack.length ? '' : 'disabled'}>Rückgängig<kbd>Z</kbd></button>
+      <button class="btn sm" data-a="skip">${t('skip')}<kbd>S</kbd></button>
+      <button class="btn sm" data-a="undo" ${undoStack.length ? '' : 'disabled'}>${t('undo')}<kbd>Z</kbd></button>
     </div>
-    <div class="muted small" style="margin-top:16px">Im Instagram-Fenster: entfolgen → <b>Strg+W</b> → hier <kbd>E</kbd></div>`;
+    <div class="muted small" style="margin-top:16px">${t('hint')}</div>`;
 }
 let listFilter = 'open', listLimit = 200;
 function renderList() {
@@ -458,16 +592,16 @@ function renderList() {
     const known = new Set(arr.map(x => x.u));
     Object.entries(S.status).forEach(([u, v]) => { if (v.s === listFilter && !known.has(u) && (!q || u.includes(q))) arr.push({ u, t: 0 }); });
   }
-  $('listCount').textContent = arr.length + ' Accounts';
+  $('listCount').textContent = t('accounts', { n: arr.length });
   $('list').innerHTML = arr.slice(0, listLimit).map(x => {
     const st = S.status[x.u]?.s;
-    const pill = st === 'u' ? '<span class="pill u">entfolgt</span>' : st === 'k' ? '<span class="pill k">behalten</span>' : '';
+    const pill = st === 'u' ? `<span class="pill u">${t('pillU')}</span>` : st === 'k' ? `<span class="pill k">${t('pillK')}</span>` : '';
     const btns = st
-      ? `<button class="btn sm" data-l="reset" data-u="${esc(x.u)}">Zurücksetzen</button>`
-      : `<button class="btn sm bad" data-l="u" data-u="${esc(x.u)}">Entfolgt</button><button class="btn sm good" data-l="k" data-u="${esc(x.u)}">Behalten</button>`;
+      ? `<button class="btn sm" data-l="reset" data-u="${esc(x.u)}">${t('reset')}</button>`
+      : `<button class="btn sm bad" data-l="u" data-u="${esc(x.u)}">${t('listU')}</button><button class="btn sm good" data-l="k" data-u="${esc(x.u)}">${t('keep')}</button>`;
     return `<div class="item"><div class="name"><a href="${urlOf(x.u)}" data-l="open" data-u="${esc(x.u)}">@${esc(x.u)}</a></div>
       <span class="date">${x.t ? fmtDate(x.t) : ''}</span>${pill}${btns}</div>`;
-  }).join('') || '<p class="muted small" style="padding:12px 0">Keine Accounts.</p>';
+  }).join('') || `<p class="muted small" style="padding:12px 0">${t('noAccounts')}</p>`;
   $('more').classList.toggle('hide', arr.length <= listLimit);
 }
 function render() { renderStats(); renderFocus(); if (!$('tabList').classList.contains('hide')) renderList(); }
@@ -483,6 +617,8 @@ function start() {
 }
 
 // ---------- events ----------
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+
 const drop = $('drop'), fileIn = $('file');
 drop.addEventListener('click', () => fileIn.click());
 fileIn.addEventListener('change', () => { handleFiles([...fileIn.files]); fileIn.value = ''; });
@@ -532,7 +668,7 @@ $('btnRestore').addEventListener('click', () => $('restoreFile').click());
 $('restoreFile').addEventListener('change', e => { handleFiles([...e.target.files]); e.target.value = ''; });
 $('btnNew').addEventListener('click', () => { $('viewMain').classList.add('hide'); $('viewUpload').classList.remove('hide'); });
 $('btnReset').addEventListener('click', () => {
-  if (!confirm('Wirklich alles löschen? Deine Markierungen (entfolgt/behalten) gehen verloren.')) return;
+  if (!confirm(t('confirmReset'))) return;
   try { localStorage.removeItem(KEY); } catch (e) {}
   location.reload();
 });
@@ -550,6 +686,7 @@ document.addEventListener('keydown', e => {
   e.preventDefault();
 });
 
+applyLang();
 if (S.following.length) start();
 })();
 </script>

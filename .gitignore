@@ -9,3 +9,4 @@ connections/
 .claude/
 .DS_Store
 Thumbs.db
+insta-cleanup-backup-*.json
