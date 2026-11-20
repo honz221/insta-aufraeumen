@@ -61,7 +61,7 @@ Dafür hat Instagram selbst eine Funktion: In der App unter **Profil → Gefolgt
 
 Das Tool ist kostenlos und bleibt es auch. Wenn es dir Zeit gespart hat und du etwas zurückgeben möchtest:
 
-**[Einen Kaffee spendieren](https://honz221.github.io/insta-aufraeumen/support.html)**
+**[Einen Kaffee spendieren auf Ko-fi](https://ko-fi.com/honz221)**
 
 Ein ⭐ für das Repository freut mich genauso.
 
